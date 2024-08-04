@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories\Contracts;
 
+use App\Aggregates\Contracts\Aggregate;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -11,48 +12,54 @@ use Illuminate\Support\Collection;
 /**
  * @template TModel of Model
  * @template TBuilder of Builder
+ * @template TAggregate of Aggregate
  */
 interface Repository
 {
     /**
-     * @return Collection<int, TModel>
+     * @return TAggregate
+     */
+    public function aggregate(Model $model);
+
+    /**
+     * @return Collection<int, TAggregate>
      */
     public function all(): Collection;
 
     /**
-     * @return Builder
+     * @return TBuilder
      */
     public function query();
 
     /**
-     * @return Model|null
+     * @return TAggregate|null
      */
     public function find(mixed $id);
 
     /**
      * @param  array<int, array<int, scalar>>  $criteria
      * @param  array<int, string>  $columns
-     * @return Model|null
+     * @return TAggregate|null
      */
     public function findOneBy(array $criteria, array $columns = ['*']);
 
     /**
      * @param  array<int, array<int, scalar>>  $criteria
-     * @return Collection<int, TModel>
+     * @return Collection<int, TAggregate>
      */
     public function findBy(array $criteria, string $sortBy, string $sortDirection = 'asc'): Collection;
 
     /**
-     * @return Model
+     * @return TAggregate
      */
-    public function create(Model $model, bool $refresh = false);
+    public function create(Aggregate $aggregate);
 
     /**
-     * @return Model
+     * @return TAggregate
      */
-    public function update(Model $model, bool $refresh = false);
+    public function update(Aggregate $aggregate);
 
-    public function delete(Model $model): void;
+    public function delete(Aggregate $aggregate): void;
 
-    public function deleteOrFail(Model $model): void;
+    public function deleteOrFail(Aggregate $aggregate): void;
 }

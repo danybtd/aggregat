@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Repositories\Contracts;
 
-use Infrastructure\Builders\UserBuilder;
-use Infrastructure\Models\User;
+use App\Aggregates\UserAggregate;
+use App\Builders\UserBuilder;
+use App\Models\User;
 
 /**
- * @extends Repository<User, UserBuilder>
+ * @extends Repository<User, UserBuilder, UserAggregate>
  */
 interface UserRepository extends Repository
 {
