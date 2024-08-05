@@ -9,6 +9,7 @@ use App\Repositories\Contracts\UserRepository;
 use App\Service\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
@@ -46,6 +47,8 @@ readonly class UserController
             abort(404);
         }
 
+        Gate::authorize( 'view', $userAggregate);
+
         return UserResource::make($userAggregate)->response();
     }
 
@@ -55,7 +58,6 @@ readonly class UserController
             ->userService
             ->getUser($id);
 
-        Gate::authorize('canUpdate', UserAggregate::class);
 
         if(! $userAggregate instanceof UserAggregate){
             abort(404);

@@ -20,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
         UserRepositoryContract::class => UserRepository::class,
     ];
 
+
     public function register(): void
     {
         //

@@ -3,16 +3,20 @@
 namespace App\Policies;
 
 use App\Aggregates\UserAggregate;
+use App\Models\User;
+use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Auth\Access\Response;
 
 class UserPolicy
 {
-    public function canUpdate(UserAggregate $userAggregate): Response
+    use HandlesAuthorization;
+
+    public function view(?User $user, UserAggregate $userAggregate): Response
     {
-        if($userAggregate->getRoot()->id === 2){
-            Response::allow();
+        if($userAggregate->getRoot()->id === 2) {
+            return $this->allow();
         }
 
-        return Response::deny('Pas autorisé');
+        return $this->deny('Pas autorisé');
     }
 }
