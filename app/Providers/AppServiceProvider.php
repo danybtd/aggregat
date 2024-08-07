@@ -10,6 +10,9 @@ class AppServiceProvider extends ServiceProvider
 {
 
 
+    /**
+     * @var array<class-string, class-string>
+     */
     public $bindings = [
         UserRepositoryContract::class => UserRepository::class,
     ];
@@ -22,6 +25,6 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        //
+
     }
 }

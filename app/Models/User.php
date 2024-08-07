@@ -2,12 +2,11 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Builders\UserBuilder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Observers\UserObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 
 
@@ -15,15 +14,16 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property string $name
  * @property string $email
+ * @property string $password
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
  * @method static UserBuilder query()
  * @method static UserBuilder newQuery()
  */
+#[ObservedBy([UserObserver::class])]
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.

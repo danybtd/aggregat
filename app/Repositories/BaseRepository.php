@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Throwable;
+use UnexpectedValueException;
 
 /**
  * @implements Contracts\Repository<Model, Builder>
@@ -19,15 +20,16 @@ abstract class BaseRepository implements Contracts\Repository
      */
     public function all(): Collection
     {
-        return $this->query()->get();
+        return $this
+            ->query()
+            ->get();
     }
 
-    public function find(mixed $id): ?Model
+    public function find(string|int $id): ?Model
     {
         return $this
             ->query()
-            ->find($id)
-            ?->first();
+            ->find($id);
     }
 
     /**
@@ -59,35 +61,57 @@ abstract class BaseRepository implements Contracts\Repository
             ->get();
     }
 
-    public function create(Model $model, bool $refresh = false): Model
+    public function create(Model $model): Model
     {
-        $model = $this
+        return $this
             ->query()
             ->create($model->getAttributes());
-
-        return $refresh
-            ? $model->refresh()
-            : $model;
     }
 
-    public function update(Model $model, bool $refresh = false): Model
+    public function createWithoutEvents(Model $model): Model
     {
-        $this
-            ->query()
-            ->where($model->getKeyName(), '=', $model->getKey())
-            ->update($model->getAttributes());
+        /** @var Model $model */
+        $model = Model::withoutEvents(
+            fn(): Model => $this->create($model)
+        );
 
-        return $refresh
-            ? $model->refresh()
-            : $model;
+        return $model;
     }
 
-    public function delete(Model $model): void
+    public function update(Model $model): bool
     {
-        $this
-            ->query()
-            ->where($model->getKeyName(), '=', $model->getKey())
-            ->delete();
+        return $model->update($model->getAttributes());
+    }
+
+    public function updateWithoutEvents(Model $model): bool
+    {
+        /** @var bool $updated */
+        $updated = Model::withoutEvents(
+            fn(): bool => $this->update($model)
+        );
+
+        return $updated;
+    }
+
+    public function updateAndRefresh(Model $model): Model
+    {
+        $this->update($model);
+        return $model->refresh();
+    }
+
+    public function deleteWithoutEvents(Model $model): bool
+    {
+        /** @var bool $deleted */
+        $deleted = Model::withoutEvents(
+            fn(): bool => $this->delete($model)
+        );
+
+        return $deleted;
+    }
+
+    public function delete(Model $model): bool
+    {
+        return (bool) $model->delete();
     }
 
     /**
@@ -98,6 +122,6 @@ abstract class BaseRepository implements Contracts\Repository
         $this
             ->query()
             ->getConnection()
-            ->transaction(fn () => $this->delete($model));
+            ->transaction(fn (): bool => $this->delete($model));
     }
 }

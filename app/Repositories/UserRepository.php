@@ -10,9 +10,6 @@ use App\Repositories\Contracts\UserRepository as UserRepositoryContract;
 
 class UserRepository extends BaseRepository implements UserRepositoryContract
 {
-    /**
-     * @return UserBuilder<User>
-     */
     public function query(): UserBuilder
     {
         return User::query();
